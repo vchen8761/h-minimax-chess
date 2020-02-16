@@ -174,10 +174,11 @@ def get_children(state, player):
         pass
 
 
-
+#Adds all possible moves for a given white pawn to the child list
 def move_pawn_white(state, list, x_cord, y_cord):
     enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
 
+    #Pawn moves forward by one
     if(y_cord - 1 >= 0):
         if(state[y_cord - 1][x_cord] == '_'):
             newBoard = copy.deepcopy(state)
@@ -185,6 +186,7 @@ def move_pawn_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Pawn takes enemy piece to the top right of it
     if((y_cord - 1) >= 0 and (x_cord + 1) < len(state)):
         if(state[y_cord - 1][x_cord + 1] in enemy_set):
             newBoard = copy.deepcopy(state)
@@ -192,6 +194,7 @@ def move_pawn_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Pawn takes enemy piece to the top left of it
     if((y_cord - 1) >= 0 and (x_cord - 1) >= 0):
         if(state[y_cord - 1][x_cord - 1] in enemy_set):
             newBoard = copy.deepcopy(state)
@@ -199,9 +202,11 @@ def move_pawn_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+#Adds all possible moves for a given white knight to the child list
 def move_knight_white(state, list, x_cord, y_cord):
     friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
 
+    #Piece moves up one and left two
     if(y_cord - 1 >= 0 and x_cord - 2 >= 0):
         if(state[y_cord - 1][x_cord - 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -209,6 +214,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves up one and right two
     if(y_cord - 1 >= 0 and x_cord + 2 < len(state)):
         if(state[y_cord - 1][x_cord + 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -216,6 +222,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves up two and left one
     if(y_cord - 2 >= 0 and x_cord - 1 >= 0):
         if(state[y_cord - 2][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -223,6 +230,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves up two and right one
     if(y_cord - 2 >= 0 and x_cord + 1 < len(state)):
         if(state[y_cord - 2][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -230,6 +238,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves down one and right two
     if(y_cord + 1 < len(state) and x_cord + 2 < len(state)):
         if(state[y_cord + 1][x_cord + 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -237,6 +246,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves down one and left two
     if(y_cord + 1 < len(state) and x_cord - 2 >= 0):
         if(state[y_cord + 1][x_cord - 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -244,6 +254,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves down 2 and right 1
     if(y_cord + 2 < len(state) and x_cord + 1 < len(state)):
         if(state[y_cord + 2][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -251,6 +262,7 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Piece moves down 2 and left 1
     if(y_cord + 2 < len(state) and x_cord - 1 >= 0):
         if(state[y_cord + 2][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
@@ -258,7 +270,33 @@ def move_knight_white(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+
 def move_rook_white(state, list, x_cord, y_cord):
+    enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
+    friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
+
+    # Move up direction
+    # for y in range(y_cord-1, 0, -1):
+    #     if(state[y][x_cord] in friendly_set):
+    #         break
+    #     if(state[y][x_cord] in enemy_set):
+    #         newBoard = copy.deepcopy(state)
+    #         newBoard[y][x_cord] = 'R'
+    #         newBoard[y_cord][x_cord] = '_'
+    #         list.append(newBoard)
+    #         break
+    #     if state[y][x_cord] == '_'
+    #         newBoard = copy.deepcopy(state)
+    #         newBoard[y][x_cord] = 'R'
+    #         newBoard[y_cord][x_cord] = '_'
+    #         list.append(newBoard)
+
+    # Move down direction
+
+    # Move left direction
+
+    # Move right direction
+
     pass
 
 def move_bishop_white(state, list, x_cord, y_cord):
@@ -271,10 +309,11 @@ def move_king_white(state, list, x_cord, y_cord):
     pass
 
 
-
+#Adds all possible moves for a given black pawn to the child list
 def move_pawn_black(state, list, x_cord, y_cord):
     enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
 
+    #Pawn moves down by 1 space
     if(y_cord + 1 < len(state)):
         if(state[y_cord + 1][x_cord] == '_'):
             newBoard = copy.deepcopy(state)
@@ -282,13 +321,14 @@ def move_pawn_black(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+    #Pawn takes piece to the bottom right of it
     if((y_cord + 1) < len(state) and (x_cord + 1) < len(state)):
         if(state[y_cord + 1][x_cord + 1] in enemy_set):
             newBoard = copy.deepcopy(state)
             newBoard[y_cord + 1][x_cord + 1] = 'p'
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
-
+    #Pawn takes piece to the bottom left of it
     if((y_cord + 1) < len(state) and (x_cord - 1) >= 0):
         if(state[y_cord + 1][x_cord - 1] in enemy_set):
             newBoard = copy.deepcopy(state)
@@ -296,8 +336,73 @@ def move_pawn_black(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+#Adds all possible moves for a given white knight to the child list
 def move_knight_black(state, list, x_cord, y_cord):
-    pass
+    friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
+
+    #Piece moves up one and left two
+    if(y_cord - 1 >= 0 and x_cord - 2 >= 0):
+        if(state[y_cord - 1][x_cord - 2] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord - 1][x_cord - 2] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Piece moves up one and right two
+    if(y_cord - 1 >= 0 and x_cord + 2 < len(state)):
+        if(state[y_cord - 1][x_cord + 2] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord - 1][x_cord + 2] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Piece moves up two and left one
+    if(y_cord - 2 >= 0 and x_cord - 1 >= 0):
+        if(state[y_cord - 2][x_cord - 1] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord - 2][x_cord - 1] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Piece moves up two and right one
+    if(y_cord - 2 >= 0 and x_cord + 1 < len(state)):
+        if(state[y_cord - 2][x_cord + 1] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord - 2][x_cord +1] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Piece moves down one and right two
+    if(y_cord + 1 < len(state) and x_cord + 2 < len(state)):
+        if(state[y_cord + 1][x_cord + 2] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord + 1][x_cord + 2] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Piece moves down one and left two
+    if(y_cord + 1 < len(state) and x_cord - 2 >= 0):
+        if(state[y_cord + 1][x_cord - 2] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord + 1][x_cord - 2] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Piece moves down two and right one
+    if(y_cord + 2 < len(state) and x_cord + 1 < len(state)):
+        if(state[y_cord + 2][x_cord + 1] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord + 2][x_cord + 1] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
+
+    #Pieces moves down two and left one
+    if(y_cord + 2 < len(state) and x_cord - 1 >= 0):
+        if(state[y_cord + 2][x_cord - 1] not in friendly_set):
+            newBoard = copy.deepcopy(state)
+            newBoard[y_cord + 2][x_cord - 1] = 'n'
+            newBoard[y_cord][x_cord] = '_'
+            list.append(newBoard)
 
 def move_rook_black(state, list, x_cord, y_cord):
     pass
