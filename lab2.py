@@ -123,18 +123,18 @@ def test_checkmate(state, player):
         except ValueError:
             continue
 
-    # Figure out checkmate logic
-    list_of_moves = []
     is_checkmate = False
-
     # If the enemy king has no legal moves, this state is checkmate
+    enemy_set, friendly_set = None, None
 
-    # if player == "WHITE":
-    #     move_king_black(state, list_of_moves, king_col, king_row)
-    #     is_checkmate = (len(list_of_moves) == 0)
-    # if player == "BLACK":
-    #     move_king_white(state, list_of_moves, king_col, king_row)
-    #     is_checkmate = (len(list_of_moves) == 0)
+    if enemy_king == "k":
+        enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
+        friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
+
+    else:
+        friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
+        enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
+
 
     return is_checkmate
 
