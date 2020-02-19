@@ -1329,7 +1329,7 @@ def min_value(state, alpha, beta, depth):
 
     value = float("inf")
     chosen_state = None
-    for child in get_children(state, "WHITE"):
+    for child in get_children(state, "BLACK"):
         max_val, max_state = max_value(child, alpha, beta, depth+1)
         value = min(value, max_val)
         if value == max_val:
