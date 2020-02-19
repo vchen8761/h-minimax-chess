@@ -49,6 +49,9 @@ BISHOP = 3
 KNIGHT = 3
 PAWN   = 1
 
+# Max depth
+MAX_DEPTH = 4
+
 ################################################################################
 #  Evaluation function
 # ------------------------------------------------------------------------------
@@ -94,13 +97,13 @@ def evaluate(state):
 #  Cutoff test function - has terminal test inside it
 # ------------------------------------------------------------------------------
 #
-def cutoff_test(state, depth):
+def cutoff_test(state, depth, player):
     is_max_depth = False
     is_checkmate = False
 
-    if depth == 4: # assuming that depth starts at 1
+    if depth == MAX_DEPTH: # assuming that depth starts at 1
         is_max_depth = True
-    if test_checkmate(state):
+    if test_checkmate(state, player):
         is_checkmate = True
 
     return (is_max_depth, is_checkmate)
@@ -109,8 +112,31 @@ def cutoff_test(state, depth):
 #  Check if current state is a terminal state/checkmate
 # ------------------------------------------------------------------------------
 #
-def test_checkmate(state):
-    return False
+def test_checkmate(state, player):
+    # Get king position based on player
+    enemy_king = 'k' if player == "WHITE" else 'K'
+    king_row, king_col = 0, 0
+    for row in range(len(state)):
+        try:
+            king_col = state[row].index(enemy_king)
+            king_row = row
+        except ValueError:
+            continue
+
+    # Figure out checkmate logic
+    list_of_moves = []
+    is_checkmate = False
+
+    # If the enemy king has no legal moves, this state is checkmate
+
+    # if player == "WHITE":
+    #     move_king_black(state, list_of_moves, king_col, king_row)
+    #     is_checkmate = (len(list_of_moves) == 0)
+    # if player == "BLACK":
+    #     move_king_white(state, list_of_moves, king_col, king_row)
+    #     is_checkmate = (len(list_of_moves) == 0)
+
+    return is_checkmate
 
 
 
@@ -1268,46 +1294,69 @@ def move_king_black(state, list, x_cord, y_cord):
 #  Heuristic-Minimax Search
 # ------------------------------------------------------------------------------
 #
-def alpha_beta_h_minimax(state, depth, alpha, beta, player):
-    # Cutoff test checks both depth reached and checkmate status
-    is_max_depth, is_checkmate = cutoff_test(state, depth)
+def alpha_beta_search(state, depth):
+    value, chosen_state = max_value(state, float("-inf"), float("inf"), depth)
+
+    return chosen_state
+
+def max_value(state, alpha, beta, depth):
+    is_max_depth, is_checkmate = cutoff_test(state, depth, "WHITE")
     if is_checkmate:
-        return (1000/depth, null)
+        return (1000/depth), state
     if is_max_depth:
-        return (evaluate(state), null)
-    chosen_child = null
+        return evaluate(state), state
 
-    if player == "WHITE":
-        # Put all child nodes into a priority queue based on distance moved / piece type
-        for child in get_children(state, player):
-            value = alpha_beta_h_minimax(child, depth+1, alpha, beta, "BLACK")
-            if value > alpha:
-                alpha = value
-                chosen_child = child
-            if beta <= alpha:
-                break
-        return (alpha, chosen_child)
+    value = float("-inf")
+    chosen_state = None
+    for child in get_children(state, "WHITE"):
+        min_val, min_state = min_value(child, alpha, beta, depth+1)
+        value = max(value, min_val)
+        if value == min_val:
+            chosen_state = min_state
+        else:
+            chosen_state = child
 
-    else: # player == "BLACK" #
-        for child in get_children(state, player):
-            value = alpha_beta_h_minimax(child, depth+1, alpha, beta, "WHITE")
-            if value < beta:
-                beta = value
-                chosen_child = child
-            if beta <= alpha:
-                break
-            return(beta, chosen_child)
+        if value >= beta:
+            return value, child
+        alpha = max(alpha, value)
 
+    return value, chosen_state
 
-list = get_children(initial_state_A, 'WHITE')
-state_counter = 0
-print("List:")
-for lists in list:
-    print(np.matrix(lists))
-    print()
-    state_counter = state_counter + 1
-print(state_counter)
+def min_value(state, alpha, beta, depth):
+    is_max_depth, is_checkmate = cutoff_test(state, depth, "WHITE")
+    if is_checkmate:
+        return (1000/depth), state
+    if is_max_depth:
+        return evaluate(state), state
 
+    value = float("inf")
+    chosen_state = None
+    for child in get_children(state, "BLACK"):
+        max_val, max_state = max_value(child, alpha, beta, depth+1)
+        value = min(value, max_val)
+        if value == max_val:
+            chosen_state = max_state
+        else:
+            chosen_state = child
+
+        if value <= alpha:
+            return value, child
+        beta = min(beta, value)
+
+    return value, chosen_state
+
+# Testing getChildren
+# list = get_children(initial_state_A, 'WHITE')
+# state_counter = 0
+# print("List:")
+# for lists in list:
+#     print(np.matrix(lists))
+#     print()
+#     state_counter = state_counter + 1
+# print("Branching factor: ", state_counter)
+
+choice = alpha_beta_search(initial_state_A, 1)
+print(np.matrix(choice))
 
 
 
@@ -1323,3 +1372,35 @@ print(state_counter)
 #
 #Initially set alpha and beta to some "big" number, but make sure evaluation of terminal nodes
 # are some bigger number so code breaks
+
+# OLD CODE BELOW
+
+# def alpha_beta_h_minimax(state, depth, alpha, beta, player):
+#     # Cutoff test checks both depth reached and checkmate status
+#     is_max_depth, is_checkmate = cutoff_test(state, depth, player)
+#     if is_checkmate:
+#         return (1000/depth, None)
+#     if is_max_depth:
+#         return (evaluate(state), None)
+#     chosen_child = None
+#
+#     if player == "WHITE":
+#         # Put all child nodes into a priority queue based on distance moved / piece type
+#         for child in get_children(state, player):
+#             value = alpha_beta_h_minimax(child, depth+1, alpha, beta, "BLACK")
+#             if value[0] > alpha:
+#                 alpha = value[0]
+#                 chosen_child = child
+#             if beta <= alpha:
+#                 break
+#         return (alpha, chosen_child)
+#
+#     else: # player == "BLACK" #
+#         for child in get_children(state, player):
+#             value = alpha_beta_h_minimax(child, depth+1, alpha, beta, "WHITE")
+#             if value[0] < beta:
+#                 beta = value[0]
+#                 chosen_child = child
+#             if beta <= alpha:
+#                 break
+#             return(beta, chosen_child)
