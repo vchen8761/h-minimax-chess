@@ -128,12 +128,12 @@ def test_checkmate(state, player):
     enemy_set, friendly_set = None, None
 
     if enemy_king == "k":
-        enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
-        friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
-
-    else:
         friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
         enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
+
+    else:
+        enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
+        friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
 
 
     return is_checkmate
