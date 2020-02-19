@@ -1312,18 +1312,16 @@ def max_value(state, alpha, beta, depth):
         min_val, min_state = min_value(child, alpha, beta, depth+1)
         value = max(value, min_val)
         if value == min_val:
-            chosen_state = min_state
-        else:
             chosen_state = child
 
         if value >= beta:
-            return value, child
+            return value, chosen_state
         alpha = max(alpha, value)
 
     return value, chosen_state
 
 def min_value(state, alpha, beta, depth):
-    is_max_depth, is_checkmate = cutoff_test(state, depth, "WHITE")
+    is_max_depth, is_checkmate = cutoff_test(state, depth, "BLACK")
     if is_checkmate:
         return (1000/depth), state
     if is_max_depth:
@@ -1331,16 +1329,14 @@ def min_value(state, alpha, beta, depth):
 
     value = float("inf")
     chosen_state = None
-    for child in get_children(state, "BLACK"):
+    for child in get_children(state, "WHITE"):
         max_val, max_state = max_value(child, alpha, beta, depth+1)
         value = min(value, max_val)
         if value == max_val:
-            chosen_state = max_state
-        else:
             chosen_state = child
 
         if value <= alpha:
-            return value, child
+            return value, chosen_state
         beta = min(beta, value)
 
     return value, chosen_state
