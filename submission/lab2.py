@@ -583,6 +583,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
         else:
             inBounds = False
 
+#Adds all possible moves for a given white queen to the child list
 def move_queen_white(state, list, x_cord, y_cord):
     enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
     friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
@@ -1202,7 +1203,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
         else:
             inBounds = False
 
-#Adds all possible moves for a given queen knight to the child list
+#Adds all possible moves for a given queen to the child list
 def move_queen_black(state, list, x_cord, y_cord):
     friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
     enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
