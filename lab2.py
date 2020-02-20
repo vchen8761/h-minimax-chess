@@ -186,7 +186,8 @@ def test_checkmate(state, player):
 
     is_checkmate = True
     king_moves = []
-    if player == "WHITE":
+
+    if player == "BLACK":
         move_king_black(state, king_moves, king_col, king_row)
         for move in king_moves:
             list = get_children(move[0], "WHITE")
@@ -194,16 +195,20 @@ def test_checkmate(state, player):
             if list[0][2] != 10000:
                 is_checkmate = False
                 break
-    # else:
-    #     move_king_white(state, king_moves, king_col, king_row)
-    #     for move in king_moves:
-    #         list = get_children(move[0], "BLACK")
-    #         list.sort(key = sortSecond, reverse = True)
-    #         if(len(list) != 0):
-    #             if list[0][2] != 10000:
-    #                 is_checkmate = False
-    #                 break
+    else:
+        # move_king_white(state, king_moves, king_col, king_row)
+        # for move in king_moves:
+        #     list = get_children(move[0], "BLACK")
+        #     list.sort(key = sortSecond, reverse = True)
+        #     if(len(list) != 0):
+        #         if list[0][2] != 10000:
+        #             is_checkmate = False
+        #             break
+        is_checkmate = False
 
+    # if(is_checkmate):
+    #     print("Here", is_checkmate, player)
+    #     print(state)
     return is_checkmate
 
 
@@ -1531,11 +1536,11 @@ num_states_visited = 0
 def alpha_beta_search(state, depth, search):
     value, chosen_state = max_value(state, float("-inf"), float("inf"), depth, search)
 
-    return chosen_state
+    return (chosen_state, value)
 
 def max_value(state, alpha, beta, depth, search):
     global num_states_visited
-    num_states_visited += 1
+    #num_states_visited += 1
     is_max_depth, is_checkmate = cutoff_test(state, depth, "WHITE")
     if is_checkmate:
         return (1000/depth), state
@@ -1551,6 +1556,7 @@ def max_value(state, alpha, beta, depth, search):
     else:
         children.sort(key = sortSecond, reverse = True)
     for child in children:
+        num_states_visited += 1
         min_val, min_state = min_value(child[0], alpha, beta, depth+1, search)
         value = max(value, min_val)
         if value == min_val:
@@ -1564,7 +1570,7 @@ def max_value(state, alpha, beta, depth, search):
 
 def min_value(state, alpha, beta, depth, search):
     global num_states_visited
-    num_states_visited += 1
+    #num_states_visited += 1
     is_max_depth, is_checkmate = cutoff_test(state, depth, "BLACK")
     if is_checkmate:
         return (1000/depth), state
@@ -1579,6 +1585,7 @@ def min_value(state, alpha, beta, depth, search):
     else:
         children.sort(key = sortSecond, reverse = True)
     for child in children:
+        num_states_visited += 1
         max_val, max_state = max_value(child[0], alpha, beta, depth+1, search)
         value = min(value, max_val)
         if value == max_val:
@@ -1601,9 +1608,10 @@ def min_value(state, alpha, beta, depth, search):
 # print("Branching factor: ", state_counter)
 
 choice = alpha_beta_search(initial_states[used_state], 1, used_search)
-print(np.matrix(choice[0]))
-print("Distance moved: ", choice[1])
-print("Value of piece taken: ", choice[2])
+print(np.matrix(choice[0][0]))
+print("Distance moved: ", choice[0][1])
+print("Value of piece taken: ", choice[0][2])
+print("End value: ", choice[1])
 print("Number of states visited: ", num_states_visited)
 
 
@@ -1652,3 +1660,4 @@ print("Number of states visited: ", num_states_visited)
 #             if beta <= alpha:
 #                 break
 #             return(beta, chosen_child)
+
