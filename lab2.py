@@ -1077,7 +1077,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -1085,7 +1085,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1107,7 +1107,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -1115,7 +1115,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1137,7 +1137,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -1145,7 +1145,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1167,7 +1167,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -1175,7 +1175,7 @@ def move_bishop_black(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1549,7 +1549,7 @@ def min_value(state, alpha, beta, depth):
 #     state_counter = state_counter + 1
 # print("Branching factor: ", state_counter)
 
-choice = alpha_beta_search(initial_state_B, 1)
+choice = alpha_beta_search(initial_state_C, 1)
 print(np.matrix(choice[0]))
 print("Distance moved: ", choice[1])
 print("Value of piece taken: ", choice[2])
