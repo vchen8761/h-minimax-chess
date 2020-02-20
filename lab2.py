@@ -49,6 +49,22 @@ BISHOP = 3
 KNIGHT = 3
 PAWN   = 1
 
+piece_values = {
+    "k": 10000,
+    "q": 9,
+    "r": 5,
+    "b": 3,
+    "n": 3,
+    "p": 1,
+    "K": 10000,
+    "Q": 9,
+    "R": 5,
+    "B": 3,
+    "N": 3,
+    "P": 1,
+    "_": 0
+}
+
 # Max depth
 MAX_DEPTH = 4
 
@@ -118,7 +134,8 @@ def test_checkmate(state, player):
     king_row, king_col = 0, 0
     for row in range(len(state)):
         try:
-            king_col = state[row].index(enemy_king)
+            states = state[0]
+            king_col = states[row].index(enemy_king)
             king_row = row
         except ValueError:
             continue
@@ -126,7 +143,6 @@ def test_checkmate(state, player):
     is_checkmate = False
     # If the enemy king has no legal moves, this state is checkmate
     enemy_set, friendly_set = None, None
-
 
     if enemy_king == "k":
         friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
@@ -177,6 +193,7 @@ def get_children(state, player):
     elif(player == "BLACK"):
         for i in range(0,len(currentBoard)):
             for j in range(0,len(currentBoard[0])):
+
                if(currentBoard[i][j] == 'p'):
                    move_pawn_black(currentBoard, listOfPossibleStates, j, i)
 
@@ -211,23 +228,25 @@ def move_pawn_white(state, list, x_cord, y_cord):
             newBoard = copy.deepcopy(state)
             newBoard[y_cord - 1][x_cord] = 'P'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, 0))
 
     #Pawn takes enemy piece to the top right of it
     if((y_cord - 1) >= 0 and (x_cord + 1) < len(state)):
         if(state[y_cord - 1][x_cord + 1] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
             newBoard[y_cord - 1][x_cord + 1] = 'P'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
     #Pawn takes enemy piece to the top left of it
     if((y_cord - 1) >= 0 and (x_cord - 1) >= 0):
         if(state[y_cord - 1][x_cord - 1] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord - 1]]
             newBoard[y_cord - 1][x_cord - 1] = 'P'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
 #Adds all possible moves for a given white knight to the child list
 def move_knight_white(state, list, x_cord, y_cord):
@@ -237,65 +256,73 @@ def move_knight_white(state, list, x_cord, y_cord):
     if(y_cord - 1 >= 0 and x_cord - 2 >= 0):
         if(state[y_cord - 1][x_cord - 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord - 2]]
             newBoard[y_cord - 1][x_cord - 2] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves up one and right two
     if(y_cord - 1 >= 0 and x_cord + 2 < len(state)):
         if(state[y_cord - 1][x_cord + 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord + 2]]
             newBoard[y_cord - 1][x_cord + 2] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves up two and left one
     if(y_cord - 2 >= 0 and x_cord - 1 >= 0):
         if(state[y_cord - 2][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 2][x_cord - 1]]
             newBoard[y_cord - 2][x_cord - 1] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves up two and right one
     if(y_cord - 2 >= 0 and x_cord + 1 < len(state)):
         if(state[y_cord - 2][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 2][x_cord + 1]]
             newBoard[y_cord - 2][x_cord +1] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves down one and right two
     if(y_cord + 1 < len(state) and x_cord + 2 < len(state)):
         if(state[y_cord + 1][x_cord + 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord + 2]]
             newBoard[y_cord + 1][x_cord + 2] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves down one and left two
     if(y_cord + 1 < len(state) and x_cord - 2 >= 0):
         if(state[y_cord + 1][x_cord - 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord - 2]]
             newBoard[y_cord + 1][x_cord - 2] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves down 2 and right 1
     if(y_cord + 2 < len(state) and x_cord + 1 < len(state)):
         if(state[y_cord + 2][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 2][x_cord + 1]]
             newBoard[y_cord + 2][x_cord + 1] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves down 2 and left 1
     if(y_cord + 2 < len(state) and x_cord - 1 >= 0):
         if(state[y_cord + 2][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 2][x_cord - 1]]
             newBoard[y_cord + 2][x_cord - 1] = 'N'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
 
 def move_rook_white(state, list, x_cord, y_cord):
@@ -303,68 +330,95 @@ def move_rook_white(state, list, x_cord, y_cord):
     friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
 
     # Move up direction
+    move_counter = 0
     for y in range(y_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move down direction
+    move_counter = 0
     for y in range(y_cord+1, len(state), 1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move left direction
+    move_counter = 0
     for x in range(x_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move right direction
+    move_counter = 0
     for x in range(x_cord+1, len(state), 1):
+        move_counter = move_counter + 1
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'R'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
 
 def move_bishop_white(state, list, x_cord, y_cord):
@@ -375,23 +429,29 @@ def move_bishop_white(state, list, x_cord, y_cord):
     # Move up-left direction
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x + 1 < len(state)):
             y = y - 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -399,23 +459,29 @@ def move_bishop_white(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x - 1 >= 0):
             y = y - 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -423,23 +489,29 @@ def move_bishop_white(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x - 1 >= 0):
             y = y + 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -447,23 +519,29 @@ def move_bishop_white(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x + 1 < len(state)):
             y = y + 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -475,23 +553,29 @@ def move_queen_white(state, list, x_cord, y_cord):
     # Move up-left direction
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x + 1 < len(state)):
             y = y - 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -499,23 +583,29 @@ def move_queen_white(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x - 1 >= 0):
             y = y - 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -523,23 +613,29 @@ def move_queen_white(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x - 1 >= 0):
             y = y + 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -547,89 +643,123 @@ def move_queen_white(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x + 1 < len(state)):
             y = y + 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
+                value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'Q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
     # Move up direction
+    move_counter = 0
     for y in range(y_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move down direction
+    move_counter = 0
     for y in range(y_cord+1, len(state), 1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y][x_cord]]
             newBoard[y][x_cord] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move left direction
+    move_counter = 0
     for x in range(x_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move right direction
+    move_counter = 0
     for x in range(x_cord+1, len(state), 1):
+        move_counter = move_counter + 1
+
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x]]
             newBoard[y_cord][x] = 'Q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
 def move_king_white(state, list, x_cord, y_cord):
     enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
@@ -637,115 +767,83 @@ def move_king_white(state, list, x_cord, y_cord):
 
     # Move up-left direction
     if(y_cord - 1 >= 0 and x_cord + 1 < len(state)):
-        if(state[y_cord - 1][x_cord + 1] in enemy_set):
+        if(state[y_cord - 1][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
             newBoard[y_cord - 1][x_cord + 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord - 1][x_cord + 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord + 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move up-right direction
     if(y_cord - 1 >= 0 and x_cord - 1 >= 0):
-        if(state[y_cord - 1][x_cord - 1] in enemy_set):
+        if(state[y_cord - 1][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
             newBoard[y_cord - 1][x_cord - 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord - 1][x_cord - 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord - 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move down-left direction
     if(y_cord + 1 < len(state) and x_cord - 1 >= 0):
-        if(state[y_cord + 1][x_cord - 1] in enemy_set):
+        if(state[y_cord + 1][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord - 1]]
             newBoard[y_cord + 1][x_cord - 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord + 1][x_cord - 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord - 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move down-right direction
     if(y_cord + 1 < len(state) and x_cord + 1 < len(state)):
-        if(state[y_cord + 1][x_cord + 1] in enemy_set):
+        if(state[y_cord + 1][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord + 1]]
             newBoard[y_cord + 1][x_cord + 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord + 1][x_cord + 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord + 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move up direction
     if(y_cord - 1 >= 0):
-        if(state[y_cord - 1][x_cord] in enemy_set):
+        if(state[y_cord - 1][x_cord] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord]]
             newBoard[y_cord - 1][x_cord] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord - 1][x_cord] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move down direction
     if(y_cord + 1 < len(state)):
-        if(state[y_cord + 1][x_cord] in enemy_set):
+        if(state[y_cord + 1][x_cord] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord]]
             newBoard[y_cord + 1][x_cord] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord + 1][x_cord] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move left direction
     if(x_cord - 1 >= 0):
-        if(state[y_cord][x_cord - 1] in enemy_set):
+        if(state[y_cord][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x_cord - 1]]
             newBoard[y_cord][x_cord - 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord][x_cord - 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x_cord - 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move right direction
     if(x_cord + 1 < len(state)):
-        if(state[y_cord][x_cord + 1] in enemy_set):
+        if(state[y_cord][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord][x_cord + 1]]
             newBoard[y_cord][x_cord + 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord][x_cord + 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x_cord + 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
 
 #Adds all possible moves for a given black pawn to the child list
@@ -758,22 +856,24 @@ def move_pawn_black(state, list, x_cord, y_cord):
             newBoard = copy.deepcopy(state)
             newBoard[y_cord + 1][x_cord] = 'p'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, 0))
 
     #Pawn takes piece to the bottom right of it
     if((y_cord + 1) < len(state) and (x_cord + 1) < len(state)):
         if(state[y_cord + 1][x_cord + 1] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord + 1]]
             newBoard[y_cord + 1][x_cord + 1] = 'p'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
     #Pawn takes piece to the bottom left of it
     if((y_cord + 1) < len(state) and (x_cord - 1) >= 0):
         if(state[y_cord + 1][x_cord - 1] in enemy_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord - 1]]
             newBoard[y_cord + 1][x_cord - 1] = 'p'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
 #Adds all possible moves for a given white knight to the child list
 def move_knight_black(state, list, x_cord, y_cord):
@@ -783,133 +883,168 @@ def move_knight_black(state, list, x_cord, y_cord):
     if(y_cord - 1 >= 0 and x_cord - 2 >= 0):
         if(state[y_cord - 1][x_cord - 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord - 2]]
             newBoard[y_cord - 1][x_cord - 2] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves up one and right two
     if(y_cord - 1 >= 0 and x_cord + 2 < len(state)):
         if(state[y_cord - 1][x_cord + 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 1][x_cord + 2]]
             newBoard[y_cord - 1][x_cord + 2] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves up two and left one
     if(y_cord - 2 >= 0 and x_cord - 1 >= 0):
         if(state[y_cord - 2][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 2][x_cord - 1]]
             newBoard[y_cord - 2][x_cord - 1] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves up two and right one
     if(y_cord - 2 >= 0 and x_cord + 1 < len(state)):
         if(state[y_cord - 2][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord - 2][x_cord + 1]]
             newBoard[y_cord - 2][x_cord +1] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves down one and right two
     if(y_cord + 1 < len(state) and x_cord + 2 < len(state)):
         if(state[y_cord + 1][x_cord + 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord + 2]]
             newBoard[y_cord + 1][x_cord + 2] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
     #Piece moves down one and left two
     if(y_cord + 1 < len(state) and x_cord - 2 >= 0):
         if(state[y_cord + 1][x_cord - 2] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 1][x_cord - 2]]
             newBoard[y_cord + 1][x_cord - 2] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
-    #Piece moves down two and right one
+    #Piece moves down 2 and right 1
     if(y_cord + 2 < len(state) and x_cord + 1 < len(state)):
         if(state[y_cord + 2][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 2][x_cord + 1]]
             newBoard[y_cord + 2][x_cord + 1] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
-    #Pieces moves down two and left one
+    #Piece moves down 2 and left 1
     if(y_cord + 2 < len(state) and x_cord - 1 >= 0):
         if(state[y_cord + 2][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
+            value = piece_values[newBoard[y_cord + 2][x_cord - 1]]
             newBoard[y_cord + 2][x_cord - 1] = 'n'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 3, value))
 
 def move_rook_black(state, list, x_cord, y_cord):
     friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
     enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
 
     # Move up direction
+    move_counter = 0
     for y in range(y_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'R'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'R'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move down direction
+    move_counter = 0
     for y in range(y_cord+1, len(state), 1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'R'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'R'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move left direction
+    move_counter = 0
     for x in range(x_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'R'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'R'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move right direction
+    move_counter = 0
     for x in range(x_cord+1, len(state), 1):
+        move_counter = move_counter + 1
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'R'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'R'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'r'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
 def move_bishop_black(state, list, x_cord, y_cord):
     friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
@@ -919,23 +1054,29 @@ def move_bishop_black(state, list, x_cord, y_cord):
     # Move up-left direction
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x + 1 < len(state)):
             y = y - 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -943,23 +1084,29 @@ def move_bishop_black(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x - 1 >= 0):
             y = y - 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -967,23 +1114,29 @@ def move_bishop_black(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x - 1 >= 0):
             y = y + 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -991,23 +1144,29 @@ def move_bishop_black(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x + 1 < len(state)):
             y = y + 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'B'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'b'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard. move_counter, value))
         else:
             inBounds = False
 
@@ -1019,23 +1178,29 @@ def move_queen_black(state, list, x_cord, y_cord):
     # Move up-left direction
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
-        if(y - 1 >= 0 and x + 1 < len(state)):
+        if(y - 1 >= 0 and x + 1 < len(state[0])):
             y = y - 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1043,23 +1208,29 @@ def move_queen_black(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y - 1 >= 0 and x - 1 >= 0):
             y = y - 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1067,23 +1238,29 @@ def move_queen_black(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
         if(y + 1 < len(state) and x - 1 >= 0):
             y = y + 1
             x = x - 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1091,89 +1268,123 @@ def move_queen_black(state, list, x_cord, y_cord):
     inBounds = True
     y = y_cord
     x = x_cord
+    move_counter = 0
     while(inBounds):
-        if(y + 1 < len(state) and x + 1 < len(state)):
+        if(y + 1 < len(state) and x + 1 < len(state[0])):
             y = y + 1
             x = x + 1
+            move_counter = move_counter + 1
             if(state[y][x] in friendly_set):
                 break
+
             if(state[y][x] in enemy_set):
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
                 break
+
             if state[y][x] == '_':
                 newBoard = copy.deepcopy(state)
-                newBoard[y][x] = 'Q'
+                value = piece_values[newBoard[y][x]]
+                newBoard[y][x] = 'q'
                 newBoard[y_cord][x_cord] = '_'
-                list.append(newBoard)
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
     # Move up direction
+    move_counter = 0
     for y in range(y_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'Q'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'Q'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move down direction
+    move_counter = 0
     for y in range(y_cord+1, len(state), 1):
+        move_counter = move_counter + 1
+
         if(state[y][x_cord] in friendly_set):
             break
+
         if(state[y][x_cord] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'Q'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y][x_cord] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y][x_cord] = 'Q'
+            value = piece_values[newBoard[y][x_cord]]
+            newBoard[y][x_cord] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move left direction
+    move_counter = 0
     for x in range(x_cord-1, -1, -1):
+        move_counter = move_counter + 1
+
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'Q'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'Q'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
     # Move right direction
+    move_counter = 0
     for x in range(x_cord+1, len(state), 1):
+        move_counter = move_counter + 1
+
         if(state[y_cord][x] in friendly_set):
             break
+
         if(state[y_cord][x] in enemy_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'Q'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
             break
+
         if state[y_cord][x] == '_':
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x] = 'Q'
+            value = piece_values[newBoard[y_cord][x]]
+            newBoard[y_cord][x] = 'q'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, move_counter, value))
 
 def move_king_black(state, list, x_cord, y_cord):
     friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
@@ -1181,122 +1392,91 @@ def move_king_black(state, list, x_cord, y_cord):
 
     # Move up-left direction
     if(y_cord - 1 >= 0 and x_cord + 1 < len(state)):
-        if(state[y_cord - 1][x_cord + 1] in enemy_set):
+        if(state[y_cord - 1][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord + 1] = 'K'
+            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
+            newBoard[y_cord - 1][x_cord + 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord - 1][x_cord + 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord + 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move up-right direction
     if(y_cord - 1 >= 0 and x_cord - 1 >= 0):
-        if(state[y_cord - 1][x_cord - 1] in enemy_set):
+        if(state[y_cord - 1][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord - 1] = 'K'
+            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
+            newBoard[y_cord - 1][x_cord - 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord - 1][x_cord - 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord - 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move down-left direction
     if(y_cord + 1 < len(state) and x_cord - 1 >= 0):
-        if(state[y_cord + 1][x_cord - 1] in enemy_set):
+        if(state[y_cord + 1][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord - 1] = 'K'
+            value = piece_values[newBoard[y_cord + 1][x_cord - 1]]
+            newBoard[y_cord + 1][x_cord - 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord + 1][x_cord - 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord - 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move down-right direction
     if(y_cord + 1 < len(state) and x_cord + 1 < len(state)):
-        if(state[y_cord + 1][x_cord + 1] in enemy_set):
+        if(state[y_cord + 1][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord + 1] = 'K'
+            value = piece_values[newBoard[y_cord + 1][x_cord + 1]]
+            newBoard[y_cord + 1][x_cord + 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord + 1][x_cord + 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord + 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move up direction
     if(y_cord - 1 >= 0):
-        if(state[y_cord - 1][x_cord] in enemy_set):
+        if(state[y_cord - 1][x_cord] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord] = 'K'
+            value = piece_values[newBoard[y_cord - 1][x_cord]]
+            newBoard[y_cord - 1][x_cord] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord - 1][x_cord] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord - 1][x_cord] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move down direction
     if(y_cord + 1 < len(state)):
-        if(state[y_cord + 1][x_cord] in enemy_set):
+        if(state[y_cord + 1][x_cord] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord] = 'K'
+            value = piece_values[newBoard[y_cord + 1][x_cord]]
+            newBoard[y_cord + 1][x_cord] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord + 1][x_cord] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord + 1][x_cord] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move left direction
     if(x_cord - 1 >= 0):
-        if(state[y_cord][x_cord - 1] in enemy_set):
+        if(state[y_cord][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x_cord - 1] = 'K'
+            value = piece_values[newBoard[y_cord][x_cord - 1]]
+            newBoard[y_cord][x_cord - 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord][x_cord - 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x_cord - 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
 
     # Move right direction
     if(x_cord + 1 < len(state)):
-        if(state[y_cord][x_cord + 1] in enemy_set):
+        if(state[y_cord][x_cord + 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x_cord + 1] = 'K'
+            value = piece_values[newBoard[y_cord][x_cord + 1]]
+            newBoard[y_cord][x_cord + 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
+            list.append((newBoard, 1, value))
 
-        if state[y_cord][x_cord + 1] == '_':
-            newBoard = copy.deepcopy(state)
-            newBoard[y_cord][x_cord + 1] = 'K'
-            newBoard[y_cord][x_cord] = '_'
-            list.append(newBoard)
-
-# Number of states visited
-num_states_visited = 0
 ################################################################################
 #  Heuristic-Minimax Search
 # ------------------------------------------------------------------------------
 #
+
+# Number of states visited
+num_states_visited = 0
+
 def alpha_beta_search(state, depth):
     value, chosen_state = max_value(state, float("-inf"), float("inf"), depth)
 
@@ -1313,8 +1493,9 @@ def max_value(state, alpha, beta, depth):
 
     value = float("-inf")
     chosen_state = None
+    #board_states = [child[0] for child in get_children(state, "WHITE")]
     for child in get_children(state, "WHITE"):
-        min_val, min_state = min_value(child, alpha, beta, depth+1)
+        min_val, min_state = min_value(child[0], alpha, beta, depth+1)
         value = max(value, min_val)
         if value == min_val:
             chosen_state = child
@@ -1336,8 +1517,9 @@ def min_value(state, alpha, beta, depth):
 
     value = float("inf")
     chosen_state = None
+    #board_states = [child[0] for child in get_children(state, "BLACK")]
     for child in get_children(state, "BLACK"):
-        max_val, max_state = max_value(child, alpha, beta, depth+1)
+        max_val, max_state = max_value(child[0], alpha, beta, depth+1)
         value = min(value, max_val)
         if value == max_val:
             chosen_state = child
@@ -1353,14 +1535,16 @@ list = get_children(initial_state_A, 'WHITE')
 state_counter = 0
 print("List:")
 for lists in list:
-    print(np.matrix(lists))
+    print(np.matrix(lists[0]))
     print()
     state_counter = state_counter + 1
 print("Branching factor: ", state_counter)
 
 choice = alpha_beta_search(initial_state_A, 1)
-print(np.matrix(choice))
-print(num_states_visited)
+print(np.matrix(choice[0]))
+print("Distance moved: ", choice[1])
+print("Value of piece taken: ", choice[2])
+print("Number of states visited: ", num_states_visited)
 
 
 
