@@ -127,6 +127,7 @@ def test_checkmate(state, player):
     # If the enemy king has no legal moves, this state is checkmate
     enemy_set, friendly_set = None, None
 
+
     if enemy_king == "k":
         friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
         enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
@@ -1290,6 +1291,8 @@ def move_king_black(state, list, x_cord, y_cord):
             newBoard[y_cord][x_cord] = '_'
             list.append(newBoard)
 
+# Number of states visited
+num_states_visited = 0
 ################################################################################
 #  Heuristic-Minimax Search
 # ------------------------------------------------------------------------------
@@ -1300,6 +1303,8 @@ def alpha_beta_search(state, depth):
     return chosen_state
 
 def max_value(state, alpha, beta, depth):
+    global num_states_visited
+    num_states_visited += 1
     is_max_depth, is_checkmate = cutoff_test(state, depth, "WHITE")
     if is_checkmate:
         return (1000/depth), state
@@ -1321,6 +1326,8 @@ def max_value(state, alpha, beta, depth):
     return value, chosen_state
 
 def min_value(state, alpha, beta, depth):
+    global num_states_visited
+    num_states_visited += 1
     is_max_depth, is_checkmate = cutoff_test(state, depth, "BLACK")
     if is_checkmate:
         return (1000/depth), state
@@ -1342,17 +1349,18 @@ def min_value(state, alpha, beta, depth):
     return value, chosen_state
 
 # Testing getChildren
-# list = get_children(initial_state_A, 'WHITE')
-# state_counter = 0
-# print("List:")
-# for lists in list:
-#     print(np.matrix(lists))
-#     print()
-#     state_counter = state_counter + 1
-# print("Branching factor: ", state_counter)
+list = get_children(initial_state_A, 'WHITE')
+state_counter = 0
+print("List:")
+for lists in list:
+    print(np.matrix(lists))
+    print()
+    state_counter = state_counter + 1
+print("Branching factor: ", state_counter)
 
 choice = alpha_beta_search(initial_state_A, 1)
 print(np.matrix(choice))
+print(num_states_visited)
 
 
 
