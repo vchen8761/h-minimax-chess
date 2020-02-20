@@ -124,6 +124,9 @@ def cutoff_test(state, depth, player):
 
     return (is_max_depth, is_checkmate)
 
+def sortSecond(val):
+    return val[2]
+
 ################################################################################
 #  Check if current state is a terminal state/checkmate
 # ------------------------------------------------------------------------------
@@ -140,18 +143,24 @@ def test_checkmate(state, player):
         except ValueError:
             continue
 
-    is_checkmate = False
-    # If the enemy king has no legal moves, this state is checkmate
-    enemy_set, friendly_set = None, None
-
-    if enemy_king == "k":
-        friendly_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
-        enemy_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
-
+    is_checkmate = True
+    king_moves = []
+    if player == "WHITE":
+        move_king_black(state, king_moves, king_col, king_row)
+        for move in king_moves:
+            list = get_children(move[0], "WHITE")
+            list.sort(key = sortSecond, reverse = True)
+            if list[0][2] != 10000:
+                is_checkmate = False
+                break
     else:
-        enemy_set = set({'p', 'n', 'r', 'b', 'q', 'k'})
-        friendly_set = set({'P', 'N', 'R', 'B', 'Q', 'K'})
-
+        move_king_white(state, king_moves, king_col, king_row)
+        for move in king_moves:
+            list = get_children(move[0], "BLACK")
+            list.sort(key = sortSecond, reverse = True)
+            if list[0][2] != 10000:
+                is_checkmate = False
+                break
 
     return is_checkmate
 
@@ -443,7 +452,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -451,7 +460,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -473,7 +482,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -481,7 +490,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -503,7 +512,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -511,7 +520,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -533,7 +542,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
                 break
 
             if state[y][x] == '_':
@@ -541,7 +550,7 @@ def move_bishop_white(state, list, x_cord, y_cord):
                 value = piece_values[newBoard[y][x]]
                 newBoard[y][x] = 'B'
                 newBoard[y_cord][x_cord] = '_'
-                list.append((newBoard. move_counter, value))
+                list.append((newBoard, move_counter, value))
         else:
             inBounds = False
 
@@ -1531,16 +1540,16 @@ def min_value(state, alpha, beta, depth):
     return value, chosen_state
 
 # Testing getChildren
-list = get_children(initial_state_A, 'WHITE')
-state_counter = 0
-print("List:")
-for lists in list:
-    print(np.matrix(lists[0]))
-    print()
-    state_counter = state_counter + 1
-print("Branching factor: ", state_counter)
+# list = get_children(initial_state_A, 'WHITE')
+# state_counter = 0
+# print("List:")
+# for lists in list:
+#     print(np.matrix(lists[0]))
+#     print()
+#     state_counter = state_counter + 1
+# print("Branching factor: ", state_counter)
 
-choice = alpha_beta_search(initial_state_A, 1)
+choice = alpha_beta_search(initial_state_B, 1)
 print(np.matrix(choice[0]))
 print("Distance moved: ", choice[1])
 print("Value of piece taken: ", choice[2])
