@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import argparse
 # State representation of matrices
 #   Upper case: White pieces (can only move upward)
 #   Lower case: Black pieces (can only move downward)
@@ -9,6 +10,23 @@ import numpy as np
 # Bishop (B, b)
 # Knight (N, n)
 # Pawn   (P, p)
+
+# command line argument parsing
+parser = argparse.ArgumentParser()
+parser.add_argument('Arguments', metavar='N', type=int, nargs='+')
+arguments = parser.parse_args()
+
+# error messages
+if(len(arguments.Arguments) != 2):
+    sys.exit("    Error: Incorrect number of command line arguments supplied; 2 needed")
+if(arguments.Arguments[0] < 1 or arguments.Arguments[0] > 3):
+    sys.exit("    Error: Invalid value for first command line argument; must be in range(1,3)")
+if(arguments.Arguments[1] < 1 or arguments.Arguments[1] > 2):
+    sys.exit("    Error: Invalid value for second command line argument; must be in range(1,2)")
+
+used_state = arguments.Arguments[0]             # which given puzzle to solve
+used_search = arguments.Arguments[1]          # which heuristic strategy to use
+
 initial_state_A = [
 ['_', '_', '_', '_', '_', '_', 'q', 'k'],
 ['_', '_', '_', '_', '_', '_', '_', '_'],
@@ -41,6 +59,12 @@ initial_state_C = [
 ['_', '_', '_', '_', '_', '_', '_', '_'],
 ['_', '_', '_', '_', '_', 'N', '_', '_']
 ]
+
+initial_states = {
+    1: initial_state_A,
+    2: initial_state_B,
+    3: initial_state_C
+}
 
 # Constants for Reinfield values
 QUEEN  = 9
@@ -127,21 +151,38 @@ def cutoff_test(state, depth, player):
 def sortSecond(val):
     return val[2]
 
+def sortFirst(val):
+    return val[1]
+
 ################################################################################
 #  Check if current state is a terminal state/checkmate
 # ------------------------------------------------------------------------------
 #
 def test_checkmate(state, player):
     # Get king position based on player
-    enemy_king = 'k' if player == "WHITE" else 'K'
+    #enemy_king = 'k' if player == "WHITE" else 'K'
+    if(player == "WHITE"):
+        enemy_king = 'k'
+    else:
+        enemy_king = 'K'
     king_row, king_col = 0, 0
-    for row in range(len(state)):
-        try:
-            states = state[0]
-            king_col = states[row].index(enemy_king)
-            king_row = row
-        except ValueError:
-            continue
+    # for row in range(len(state)):
+    #     try:
+    #         states = state[0]
+    #         king_col = states[row].index(enemy_king)
+    #         king_row = row
+    #         print(np.matrix(state))
+    #         print("col:", king_col)
+    #         print("row:", king_row)
+    #     except ValueError:
+    #         continue
+
+    for i in range(0,len(state)):
+            for j in range(0,len(state[0])):
+                if(state[i][j] == enemy_king):
+                    king_col = i
+                    king_row = j
+
 
     is_checkmate = True
     king_moves = []
@@ -153,14 +194,15 @@ def test_checkmate(state, player):
             if list[0][2] != 10000:
                 is_checkmate = False
                 break
-    else:
-        move_king_white(state, king_moves, king_col, king_row)
-        for move in king_moves:
-            list = get_children(move[0], "BLACK")
-            list.sort(key = sortSecond, reverse = True)
-            if list[0][2] != 10000:
-                is_checkmate = False
-                break
+    # else:
+    #     move_king_white(state, king_moves, king_col, king_row)
+    #     for move in king_moves:
+    #         list = get_children(move[0], "BLACK")
+    #         list.sort(key = sortSecond, reverse = True)
+    #         if(len(list) != 0):
+    #             if list[0][2] != 10000:
+    #                 is_checkmate = False
+    #                 break
 
     return is_checkmate
 
@@ -788,7 +830,7 @@ def move_king_white(state, list, x_cord, y_cord):
     if(y_cord - 1 >= 0 and x_cord - 1 >= 0):
         if(state[y_cord - 1][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
+            value = piece_values[newBoard[y_cord - 1][x_cord - 1]]
             newBoard[y_cord - 1][x_cord - 1] = 'K'
             newBoard[y_cord][x_cord] = '_'
             list.append((newBoard, 1, value))
@@ -1413,7 +1455,7 @@ def move_king_black(state, list, x_cord, y_cord):
     if(y_cord - 1 >= 0 and x_cord - 1 >= 0):
         if(state[y_cord - 1][x_cord - 1] not in friendly_set):
             newBoard = copy.deepcopy(state)
-            value = piece_values[newBoard[y_cord - 1][x_cord + 1]]
+            value = piece_values[newBoard[y_cord - 1][x_cord - 1]]
             newBoard[y_cord - 1][x_cord - 1] = 'k'
             newBoard[y_cord][x_cord] = '_'
             list.append((newBoard, 1, value))
@@ -1486,12 +1528,12 @@ def move_king_black(state, list, x_cord, y_cord):
 # Number of states visited
 num_states_visited = 0
 
-def alpha_beta_search(state, depth):
-    value, chosen_state = max_value(state, float("-inf"), float("inf"), depth)
+def alpha_beta_search(state, depth, search):
+    value, chosen_state = max_value(state, float("-inf"), float("inf"), depth, search)
 
     return chosen_state
 
-def max_value(state, alpha, beta, depth):
+def max_value(state, alpha, beta, depth, search):
     global num_states_visited
     num_states_visited += 1
     is_max_depth, is_checkmate = cutoff_test(state, depth, "WHITE")
@@ -1503,8 +1545,13 @@ def max_value(state, alpha, beta, depth):
     value = float("-inf")
     chosen_state = None
     #board_states = [child[0] for child in get_children(state, "WHITE")]
-    for child in get_children(state, "WHITE"):
-        min_val, min_state = min_value(child[0], alpha, beta, depth+1)
+    children = get_children(state, "WHITE")
+    if(search == 1):
+        children.sort(key = sortFirst, reverse = True)
+    else:
+        children.sort(key = sortSecond, reverse = True)
+    for child in children:
+        min_val, min_state = min_value(child[0], alpha, beta, depth+1, search)
         value = max(value, min_val)
         if value == min_val:
             chosen_state = child
@@ -1515,7 +1562,7 @@ def max_value(state, alpha, beta, depth):
 
     return value, chosen_state
 
-def min_value(state, alpha, beta, depth):
+def min_value(state, alpha, beta, depth, search):
     global num_states_visited
     num_states_visited += 1
     is_max_depth, is_checkmate = cutoff_test(state, depth, "BLACK")
@@ -1526,9 +1573,13 @@ def min_value(state, alpha, beta, depth):
 
     value = float("inf")
     chosen_state = None
-    #board_states = [child[0] for child in get_children(state, "BLACK")]
-    for child in get_children(state, "BLACK"):
-        max_val, max_state = max_value(child[0], alpha, beta, depth+1)
+    children = get_children(state, "BLACK")
+    if(search == 1):
+        children.sort(key = sortFirst, reverse = True)
+    else:
+        children.sort(key = sortSecond, reverse = True)
+    for child in children:
+        max_val, max_state = max_value(child[0], alpha, beta, depth+1, search)
         value = min(value, max_val)
         if value == max_val:
             chosen_state = child
@@ -1549,7 +1600,7 @@ def min_value(state, alpha, beta, depth):
 #     state_counter = state_counter + 1
 # print("Branching factor: ", state_counter)
 
-choice = alpha_beta_search(initial_state_C, 1)
+choice = alpha_beta_search(initial_states[used_state], 1, used_search)
 print(np.matrix(choice[0]))
 print("Distance moved: ", choice[1])
 print("Value of piece taken: ", choice[2])
